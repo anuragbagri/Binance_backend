@@ -10,23 +10,50 @@ app.use(express.json());
 
 const seed = mnemonicToSeedSync(MNUENOMICS);
 
-app.post("/signup" , (req, res) => {
-   const username = req.body.username;
-   const password = req.body.password;
-   const Userid = 1;
-   const hdNode = HDNodeWallet.fromSeed(seed);
-   const child = hdNode.derivePath(`m/44'/60'/${Userid}'/0/0`);
-   console.log("2");
-   console.log(child);
-   console.log("1");
+app.post("/signup" , async (req, res) => {
+   const {username , password } =req.body;
+   try{
+      const findUser = await prisma.binanceUser.findUnique({
+         where : {
+            username : username,
+         }
+      });
+      if(!findUser || password!== findUser.password){
+         res.status(401).json({
+            message : "password does not match"
+         });
+      }
 
-   res.json({
-      Userid
-   })
+      const userId = findUser.id;
+      const hdNode = HDNodeWallet.fromSeed(seed);
+      const child = hdNode.derivePath(`m/44'/60'/${userId}'/0/0`);
+
+      const insertUser = await prisma.binanceUser.update({
+       where : {username : findUser.username},
+       data :  {depositAddress : child.address,
+                publicKey : child.publicKey,
+                privateKey : child.privateKey
+       }
+      });
+
+      res.json({
+         message : {
+            id : insertUser.id,
+            name : insertUser.username,
+            walletAddress : insertUser.address,
+            publickey : insertUser.publicKey,
+            privatekey : insertUser.privateKey
+         }
+      });
+   }
+   catch(error){
+      console.log("user does not exist" , error);
+      res.status(401).json("user does not exist");
+   }
 })
 
 app.get("/depositAddress/:Userid" , (req,res) => {
 
 })
 
-app.listen(3000);
+app.listen(3000, () => console.log("Server running on port 3000"));
