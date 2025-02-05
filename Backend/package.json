@@ -2,9 +2,10 @@
   "name": "backend",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "index.js", 
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev" : "tsc -b && node dist/index.js",
+    "prisma:push" : "npx prisma migrate dev"
   },
   "keywords": [],
   "author": "",
@@ -12,6 +13,8 @@
   "dependencies": {
     "@prisma/client": "^6.3.1",
     "@types/express": "^5.0.0",
+    "bip39": "^3.1.0",
+    "ethers": "^6.13.5",
     "express": "^4.21.2",
     "prisma": "^6.3.1"
   }
