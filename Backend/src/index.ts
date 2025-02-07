@@ -32,7 +32,7 @@ app.post("/signup" , async (req, res) => {
             publicKey : child.publicKey,
             privateKey : child.privateKey
          }
-      })
+      }) // 
 
       res.json({
          message : {
