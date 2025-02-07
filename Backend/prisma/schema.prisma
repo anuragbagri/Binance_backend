@@ -14,11 +14,16 @@ datasource db {
 }
 
 model binanceUser {
-  id             Int     @id @default(autoincrement())
-  username       String
-  password       String
-  depositAddress String?
-  publickey      String?
-  privateKey     String?
-  balance        Float?
+  id              Int     @id @default(autoincrement())
+  username        String
+  password        String
+  depositAddress  String?
+  publickey       String?
+  privateKey      String?
+  balance         Float?
+  transactionHash String?
+  from            String?
+  to              String?
+  value           Int?
+  direction       String?
 }
