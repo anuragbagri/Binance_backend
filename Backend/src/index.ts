@@ -28,7 +28,7 @@ app.post("/signup" , async (req, res) => {
       const insertUser = await prisma.binanceUser.update({
          where : { id : createUser.id},
          data : {
-            walletAddress : child.address,
+            depositAddress : child.address,
             publicKey : child.publicKey,
             privateKey : child.privateKey
          }
@@ -38,7 +38,7 @@ app.post("/signup" , async (req, res) => {
          message : {
             id : insertUser.id,
             name : insertUser.username,
-            walletAddress : insertUser.address,
+            depositAddress : insertUser.address,
             publickey : insertUser.publicKey,
             privatekey : insertUser.privateKey
          }
@@ -50,8 +50,5 @@ app.post("/signup" , async (req, res) => {
    }
 })
 
-app.get("/depositAddress/:Userid" , (req,res) => {
-
-})
 
 app.listen(3000, () => console.log("Server running on port 3000"));
