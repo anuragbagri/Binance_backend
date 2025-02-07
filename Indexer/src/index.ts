@@ -5,32 +5,37 @@ const provider =new JsonRpcProvider('https://eth-sepolia.g.alchemy.com/v2/L2WQTc
 
 async function main(){
     // current block number 
-    const CURRENT_BLOCK_NUMBER = await provider.getBlockNumber(); 
+    try {
+        const CURRENT_BLOCK_NUMBER = await provider.getBlockNumber(); 
 
-    // user address
-    const user = await axios.get("http://localhost:3000/signup");
-    const userName = user.data.username;
-
-    // find in db 
-    const findUser = await prisma.binanceUser.findUnique({
-        where : {username : userName }
-    })
-    if(!findUser){
-        console.log("user not found")
-        return ;
-    }
-    const walletAddress = findUser.depositAddress;
-
-    const transactions = await getTransactionReceipt(CURRENT_BLOCK_NUMBER ,true)
-
-    const interestedTransactions = transactions?.result.filter(txn => txn.to === walletAddress);
-
-    const fullTxns = await Promise.all(
-        interestedTransactions.map(async ({ transactionHash }) => {
-            return await provider.getTransaction(transactionHash);
+        // user address
+        const user = await axios.get("http://localhost:3000/signup");
+        const userName = user.data.username;
+    
+        // find in db 
+        const findUser = await prisma.binanceUser.findUnique({
+            where : {username : userName }
         })
-    );
-    console.log(fullTxns);
+        if(!findUser){
+            console.log("user not found")
+            return ;
+        }
+        const walletAddress = findUser.depositAddress;
+    
+        const transactions = await getTransactionReceipt(CURRENT_BLOCK_NUMBER ,true)
+    
+        const interestedTransactions = transactions?.result.filter(txn => txn.to === walletAddress);
+    
+        const fullTxns = await Promise.all(
+            interestedTransactions.map(async ({ transactionHash }) => {
+                return await provider.getTransaction(transactionHash);
+            })
+        );
+        console.log(fullTxns);
+    }
+    catch(error){
+      console.log("error " , error)
+    }
 }
 
 interface TransactionReceipt {
